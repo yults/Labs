@@ -1,0 +1,53 @@
+#include <iostream>
+#include <vector>
+#include <stack>
+#include <algorithm>
+#include <fstream>
+
+using namespace std;
+
+vector<bool> vis;
+vector<int> d, dg, gnd;
+vector<vector<int> > E;
+void dfs(int u)
+{
+    if (vis[u]) return;
+    vis[u] = true;
+    for (int i = 0; i < E[u].size(); i++)
+        dfs(E[u][i]);
+    d.push_back(u);
+}
+
+int main()
+{
+    int n, m, mdg = 0;
+    cin >> n >> m;
+    vis.resize(n);
+    dg.resize(n);
+    E.resize(n);
+    gnd.resize(n);
+    for (int i = 0; i < m; i++)
+    {
+        int u, v;
+        cin >> u >> v;
+        u--; v--;
+        E[u].push_back(v);
+        dg[u]++;
+        mdg = max(mdg, dg[u]);
+    }
+    mdg++;
+    for (int i = 0; i < n; i++)
+        dfs(i);
+    for (int i = 0; i < d.size(); i++)
+    {
+        vector<bool> vis2(mdg);
+        int u = d[i], sz = 0;
+        for (int j = 0; j < E[u].size(); j++)
+            vis2[gnd[E[u][j]]] = true;
+        while (vis2[sz]) sz++;
+        gnd[u] = sz;
+    }
+    for (int i = 0; i < n; i++)
+        cout << gnd[i] << endl;
+    return 0;
+}
