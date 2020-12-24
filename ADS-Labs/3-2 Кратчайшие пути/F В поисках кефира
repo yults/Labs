@@ -1,0 +1,62 @@
+#include <iostream>
+#include <vector>
+#include <set>
+#include <algorithm>
+
+using namespace std;
+
+vector<long long> ans;
+vector<vector<pair<long long, long long> > > g;
+
+void dkstr(long long k)
+{
+    ans.resize(0);
+    ans.resize(g.size(), 1000000000000001);
+    ans[k] = 0;
+    vector<bool> vis(g.size());
+    set<pair<long long, long long> > s;
+    pair<long long, long long> a = make_pair(0, k);
+    s.insert(a);
+    while (!s.empty())
+    {
+        long long dt = s.begin()->first;
+        long long v = s.begin()->second;
+        s.erase(make_pair(dt, v));
+        for (long long i = 0; i < g[v].size(); i++)
+        {
+            long long u = g[v][i].first;
+            long long z = g[v][i].second;
+            if (ans[u] - z <= ans[v]) continue;
+            if (ans[u] != 1000000000000001) s.erase(make_pair(ans[u], u));
+            ans[u] = ans[v] + z;
+            s.insert(make_pair(ans[u], u));
+        }
+    }
+}
+int main()
+{
+    long long n, m;
+    cin >> n >> m;
+    g.resize(n);
+    for (long long i = 0; i < m; i++)
+    {
+        long long u, v, z;
+        cin >> u >> v >> z;
+        u--; v--;
+        g[u].push_back(make_pair(v, z));
+        g[v].push_back(make_pair(u, z));
+    }
+    long long x, y, z;
+    cin >> x >> y >> z;
+    x--; y--; z--;
+    vector<long long> pt;
+    dkstr(x);
+    pt.push_back(ans[y]);
+    pt.push_back(ans[z]);
+    dkstr(y);
+    pt.push_back(ans[z]);
+    sort(pt.begin(), pt.end());
+    if (pt[1] == 1000000000000001) cout << -1;
+    else cout << pt[0] + pt[1];
+    return 0;
+}
