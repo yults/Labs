@@ -1,0 +1,75 @@
+#include <iostream>
+#include <vector>
+#include <stack>
+#include <algorithm>
+#include <fstream>
+
+using namespace std;
+
+vector<bool> vis;
+vector<int> dg, d;
+vector<vector<int> > e;
+void dfs(int u)
+{
+    vis[u] = true;
+    for (int i = 0; i < e[u].size(); i++)
+    {
+        int v = e[u][i];
+        if (vis[v]) continue;
+        if (d[u] == 2)
+        {
+            dg[v]--;
+            if (dg[v] == 0)
+            {
+                d[v] = 1;
+                dfs(v);
+            }
+        } else if (d[u] == 1)
+        {
+            d[v] = 2;
+            dfs(v);
+        }
+    }
+}
+
+int main()
+{
+    int n, m;
+    while (cin >> n)
+    {
+        cin >> m;
+        vis.resize(0);
+        d.resize(0);
+        dg.resize(0);
+        e.resize(0);
+        vis.resize(n);
+        d.resize(n, 0);
+        dg.resize(n, 0);
+        e.resize(n);
+        for (int i = 0; i < m; i++)
+        {
+            int u, v;
+            cin >> u >> v;
+            u--; v--;
+            e[v].push_back(u);
+            dg[u]++;
+        }
+        for (int i = 0; i < n; i++)
+        {
+            if (dg[i] == 0)
+            {
+                d[i] = 1;
+                dfs(i);
+            }
+        }
+        for (int i = 0; i < d.size(); i++)
+        {
+            if (d[i] == 2) cout << "FIRST ";
+                else if (d[i] == 1) cout << "SECOND ";
+                    else cout << "DRAW ";
+            cout << endl;
+        }
+        cout << endl;
+    }
+    return 0;
+}
