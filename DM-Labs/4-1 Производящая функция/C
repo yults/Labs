@@ -1,0 +1,53 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <cmath>
+ 
+using namespace std;
+ 
+int k;
+vector <long long> p, q, qr, z, c;
+ 
+int main()
+{
+    cin >> k;
+    z.resize(k);
+    c.resize(k);
+    for (int i = 0; i < k; i++)
+        cin >> z[i];
+    for (int i = 0; i < k; i++)
+        cin >> c[i];
+    q.push_back(1);
+    for (int i = 0; i < k; i++)
+        q.push_back(-c[i]);
+    while (!q[q.size() - 1])
+        q.pop_back();
+    for (int i = 0; i < q.size() + k; i++)
+    {
+        int s = 0;
+        for (int j = 0; j <= i; j++)
+        {
+            long long x = 0, y = 0;
+            if (i - j < q.size())
+                y = q[i - j];
+            if (j < k)
+                x = z[j];
+            s = (s + (x * y));
+        }
+        qr.push_back((s));
+    }
+    while (!qr[qr.size() - 1])
+        qr.pop_back();
+    for (int i = 0; i < k; i++)
+        p.push_back(qr[i]);
+    while (!p[p.size() - 1])
+        p.pop_back();
+    cout << p.size() - 1 << endl;
+    for (int i = 0; i < p.size(); i++)
+        cout << p[i] << ' ';
+    cout << endl << q.size() - 1 << endl;
+    for (int i = 0; i < q.size(); i++)
+        cout << q[i] << ' ';
+    return 0;
+}
