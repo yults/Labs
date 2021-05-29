@@ -1,0 +1,39 @@
+function escape(s) {
+	let r = []; 
+	r[0] = "";
+    for (let i = 0; i < s.length; i++) {
+        let c = s[i];
+        switch (c) {
+          case '"':
+             r[i + 1] = r[i] + "\\\"";
+            break;
+          case '\'':
+            r[i + 1] = r[i] + "\\\'";
+            break;
+          case '\n':
+            r[i + 1] = r[i] + "\\n";
+            break;
+          case '\\':
+            r[i + 1] = r[i] + "\\\\";
+            break;
+          default:
+            r[i + 1] = r[i] + c;
+            break;
+      }
+    }
+    return r[s.length];
+}
+ 
+src = "function escape(s) {\n	let r = []; \n	r[0] = \"\";\n    for (let i = 0; i < s.length; i++) {\n        let c = s[i];\n        switch (c) {\n          case \'\"\':\n             r[i + 1] = r[i] + \"\\\\\\\"\";\n            break;\n          case \'\\\'\':\n            r[i + 1] = r[i] + \"\\\\\\\'\";\n            break;\n          case \'\\n\':\n            r[i + 1] = r[i] + \"\\\\n\";\n            break;\n          case \'\\\\\':\n            r[i + 1] = r[i] + \"\\\\\\\\\";\n            break;\n          default:\n            r[i + 1] = r[i] + c;\n            break;\n      }\n    }\n    return r[s.length];\n}\n\nsrc = \"?\";\n\nfunction run(){\n	let p = src.indexOf(\"?\");\n	let s = src.substring(0, p) + escape(src) + src.substring(p + 1);\n	print(s);\n}\n\nfunction main() {\n	run();\n}\n\nmain();\n";
+ 
+function run(){
+	let p = src.indexOf("?");
+	let s = src.substring(0, p) + escape(src) + src.substring(p + 1);
+	print(s);
+}
+ 
+function main() {
+	run();
+}
+ 
+main();
