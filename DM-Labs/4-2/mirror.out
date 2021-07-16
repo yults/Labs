@@ -1,0 +1,23 @@
+start: s
+accept: ac
+reject: rj
+blank: _
+ 
+s 0 -> s 0 >
+s 1 -> s 1 >
+s _ -> mir _ <
+mir 0 -> enol x >
+enol 0 -> enol 0 >
+enol 1 -> enol 1 >
+enol _ -> snol 0 <
+snol 0 -> snol 0 <
+snol 1 -> snol 1 <
+snol x -> mir 0 <
+mir 1 -> eone x >
+eone 0 -> eone 0 >
+eone 1 -> eone 1 >
+eone _ -> sone 1 <
+sone 0 -> sone 0 <
+sone 1 -> sone 1 <
+sone x -> mir 1 <
+mir _ -> ac _ >
