@@ -1,0 +1,29 @@
+start: s
+accept: ac
+reject: rj
+blank: _
+ 
+s 0 -> nol _ >
+nol 0 -> nol 0 >
+nol 1 -> one 0 >
+nol _ -> pnol _ >
+pnol 0 -> pnol 0 >
+pnol 1 -> pnol 1 >
+pnol _ -> out 0 <
+s 1 -> one _ >
+one 0 -> nol 1 >
+one 1 -> one 1 >
+one _ -> pone _ >
+pone 0 -> pone 0 >
+pone 1 -> pone 1 >
+pone _ -> out 1 <
+out 0 -> out 0 <
+out 1 -> out 1 <
+out _ -> prov _ <
+prov 0 -> pout 0 <
+prov 1 -> pout 1 <
+prov _ -> fin _ >
+pout 0 -> pout 0 <
+pout 1 -> pout 1 <
+pout _ -> s _ >
+fin _ -> ac _ >
