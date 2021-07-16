@@ -1,0 +1,39 @@
+start: s
+accept: ac
+reject: rj
+blank: _
+ 
+s 0 -> s 0 <
+s 1 -> s 1 <
+s 2 -> s 2 <
+s _ -> nol x <
+nol _ -> r 0 >
+r 0 -> r 0 >
+r 1 -> r 1 >
+r x -> nextr x >
+r _ -> end _ >
+nextr 0 -> nextr 0 >
+nextr 1 -> nextr 1 >
+nextr 2 -> nextr 2 >
+nextr _ -> delone _ <
+delone 0 -> delone 0 <
+delone 1 -> plus 0 >
+delone 2 -> plus 1 >
+delone _ -> rj _ ^
+plus 0 -> plus 2 >
+plus _ -> nextl _ <
+nextl 0 -> nextl 0 <
+nextl 1 -> nextl 1 <
+nextl 2 -> nextl 2 <
+nextl x -> pone x <
+pone 0 -> r 1 >
+pone 1 -> pone 0 <
+pone _ -> r 1 >
+delone x ->  del x >
+del 0 -> del 0 >
+del _ -> delr _ <
+delr 0 -> delr _ <
+delr x -> end _ <
+end 0 -> end 0 <
+end 1 -> end 1 <
+end _ -> ac _ >
