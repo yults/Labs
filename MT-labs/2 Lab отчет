@@ -358,7 +358,7 @@
        & Пустой тест, вернет ошибку\\ \hline
     int a;   & Простой тест, проверяет $S \rightarrow \varepsilon$, $Z \rightarrow \varepsilon$ и $N \rightarrow v$\\ \hline
     int a, b; & Тест на правило $Z \rightarrow N,Z$\\ \hline
-    int64 a1, b2с; & Тест на распознавание названий переменных и типов\\ \hline
+    int_64 a1, b2с; & Тест на распознавание названий переменных и типов\\ \hline
     int *a; & Тест на правило $N \rightarrow *N$\\ \hline
     int **a; & Тест на правило $T \rightarrow :n$\\ \hline
     int a; boolean b; & char Тест  на правило $S \rightarrow nZN;S$\\ \hline
