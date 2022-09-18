@@ -127,77 +127,77 @@
   Лексический анализатор:
   \begin{verbatim}
     import java.io.IOException;
-    import java.io.InputStream;
-    import java.text.ParseException;
-    
-    public class LexicalAnalyzer {
-        private final InputStream is;
-        private int curChar;
-        private int curPos;
-        private Token curToken;
-    
-        public LexicalAnalyzer(InputStream is) throws ParseException {
-            this.is = is;
-            curPos = 0;
-            nextChar();
-        }
-    
-        private boolean isBlank(int c) {
-            return Character.isWhitespace(c);
-        }
-    
-        private void nextChar() throws ParseException {
-            curPos++;
-            try {
-                curChar = is.read();
-            } catch (IOException e) {
-                throw new ParseException(e.getMessage(), curPos);
-            }
-        }
-    
-        public String nextToken() throws ParseException {
-            while (isBlank(curChar)) {
-                nextChar();
-            }
-    
-            switch (curChar) {
-                case '*':
-                    nextChar();
-                    curToken = Token.STAR;
-                    return "*";
-                case ';':
-                    nextChar();
-                    curToken = Token.SEMICOLON;
-                    return ";";
-                case ',':
-                    nextChar();
-                    curToken = Token.COMMA;
-                    return ",";
-                case -1:
-                    curToken = Token.END;
-                    return "";
-                default:
-                    if (!Character.isAlphabetic(curChar)) {
-                        throw new ParseException("Invalid token at pos ", curPos);
-                    }
-                    StringBuilder token = new StringBuilder();
-                    while (Character.isAlphabetic(curChar) || Character.isDigit(curChar)) {
-                        token.append(Character.toChars(curChar));
-                        nextChar();
-                    }
-                    curToken = Token.NAME;
-                    return token.toString();
-            }
-        }
-    
-        public Token curToken() {
-            return curToken;
-        }
-    
-        public int curPos() {
-            return curPos;
+import java.io.InputStream;
+import java.text.ParseException;
+
+public class LexicalAnalyser {
+    private final InputStream is;
+    private int curChar;
+    private int curPos;
+    private Token curToken;
+
+    public LexicalAnalyser(InputStream is) throws ParseException {
+        this.is = is;
+        curPos = 0;
+        nextChar();
+    }
+
+    private boolean isBlank(int c) {
+        return Character.isWhitespace(c);
+    }
+
+    private void nextChar() throws ParseException {
+        curPos++;
+        try {
+            curChar = is.read();
+        } catch (IOException e) {
+            throw new ParseException(e.getMessage(), curPos);
         }
     }
+
+    public String nextToken() throws ParseException {
+        while (isBlank(curChar)) {
+            nextChar();
+        }
+
+        switch (curChar) {
+            case '*':
+                nextChar();
+                curToken = Token.STAR;
+                return "*";
+            case ';':
+                nextChar();
+                curToken = Token.SEMICOLON;
+                return ";";
+            case ',':
+                nextChar();
+                curToken = Token.COMMA;
+                return ",";
+            case -1:
+                curToken = Token.END;
+                return "";
+            default:
+                if (!Character.isAlphabetic(curChar)) {
+                    throw new ParseException("Invalid token at pos ", curPos);
+                }
+                StringBuilder token = new StringBuilder();
+                while (Character.isAlphabetic(curChar) || Character.isDigit(curChar) || curChar == '_') {
+                    token.append(Character.toChars(curChar));
+                    nextChar();
+                }
+                curToken = Token.NAME;
+                return token.toString();
+        }
+    }
+
+    public Token curToken() {
+        return curToken;
+    }
+
+    public int curPos() {
+        return curPos;
+    }
+}
   \end{verbatim}
   
   \section{3. Построение синтаксического анализатора}
@@ -248,108 +248,80 @@
   Синтаксический анализатор с использованием рекурсивного спуска:
   \begin{verbatim}
     import java.io.InputStream;
-    import java.text.ParseException;
-    import java.util.List;
-    
-    public class KotlinParser {
-        private LexicalAnalyzer lex;
-        private String token;
-    
-        private Tree S() throws ParseException {
-            if (lex.curToken() == Token.FUN) {
-                token = lex.nextToken();
-                return new Tree("S", new Tree("fun"), N());
-            } else {
-                throw new ParseException("`fun` expected at pos " + lex.curPos(), lex.curPos());
-            }
-        }
-    
-        private Tree N() throws ParseException {
-            if (lex.curToken() == Token.NAME) {
-                String name = token;
-                token = lex.nextToken();
-                if (lex.curToken() != Token.LPAREN) {
-                    throw new ParseException("`(` expected at pos " + lex.curPos(), lex.curPos());
-                }
-                token = lex.nextToken();
-                Tree p = P();
-                if (lex.curToken() != Token.RPAREN) {
-                    throw new ParseException("`)` expected at pos " + lex.curPos(), lex.curPos());
-                }
-                token = lex.nextToken();
-                Tree t = T();
-                if (lex.curToken() != Token.END) {
-                    throw new ParseException("Eof expected at pos " + lex.curPos(), lex.curPos());
-                }
-                return new Tree("N", new Tree(name), new Tree("LPAREN"), p, new Tree("RPAREN"), t);
-            }
-            throw new ParseException("Expression expected at pos " + lex.curPos(), lex.curPos());
-        }
-    
-        private Tree P() throws ParseException {
-            if (lex.curToken() == Token.RPAREN) {
-                return new Tree("P", new Tree("eps"));
-            } else if (lex.curToken() == Token.NAME) {
-                Tree pp = PPrime();
-                Tree c = C();
-                return new Tree("P", pp, c);
-            }
-            throw new ParseException("Unexpected token at pos " + lex.curPos(), lex.curPos());
-        }
-    
-        private Tree PPrime() throws ParseException {
+import java.text.ParseException;
+
+public class Parser {
+    private LexicalAnalyser lex;
+    private String token;
+
+    private Tree S() throws ParseException {
+        if (lex.curToken() == Token.NAME) {
             String name = token;
             token = lex.nextToken();
-            if (lex.curToken() != Token.COLON) {
-                throw new ParseException("`:` expected at pos " + lex.curPos(), lex.curPos());
-            }
+            Tree z = Z();
             token = lex.nextToken();
-            String type = token;
+            Tree n = N();
             token = lex.nextToken();
-            return new Tree("PPrime", new Tree(name), new Tree("COLON"), new Tree(type));
-        }
-    
-        private Tree C() throws ParseException {
-            if (lex.curToken() != Token.COMMA && lex.curToken() != Token.RPAREN) {
-                throw new ParseException("',' or ')' expected at pos " + lex.curPos(), lex.curPos());
+            if (lex.curToken() != Token.SEMICOLON) {
+                throw new ParseException("`;` expected at pos " + lex.curPos(), lex.curPos());
             }
-            if (lex.curToken() == Token.RPAREN) {
-                return new Tree("C", new Tree("eps"));
-            }
-            token = lex.nextToken();
-            Tree pp = PPrime();
-            Tree c = C();
-            return new Tree("C", new Tree("COMMA"), pp, c);
-        }
-    
-        private Tree T() throws ParseException {
-            if (lex.curToken() == Token.END) {
-                return new Tree("T", new Tree("eps"));
-            }
-            if (lex.curToken() != Token.COLON) {
-                throw new ParseException("`:` expected at pos " + lex.curPos(), lex.curPos());
-            }
-            token = lex.nextToken();
-            String type = token;
-            token = lex.nextToken();
+            Tree s = S();
             if (lex.curToken() != Token.END) {
                 throw new ParseException("Eof expected at pos " + lex.curPos(), lex.curPos());
             }
-            return new Tree("T", new Tree(type));
+            return new Tree("S", new Tree(name), z, n, new Tree("SEMICOLON"), s);
         }
-    
-        public Tree parse(InputStream is) throws ParseException {
-            lex = new LexicalAnalyzer(is);
-            token = lex.nextToken();
-            return S();
+        else if (lex.curToken() == Token.END) {
+            return new Tree("S", new Tree("eps"));
         }
+        else
+        throw new ParseException("Expression expected at pos " + lex.curPos(), lex.curPos());
     }
 
+    private Tree Z() throws ParseException {
+        if (lex.curToken() == Token.END) {
+            return new Tree("Z", new Tree("eps"));
+        } else if (lex.curToken() == Token.NAME || lex.curToken() == Token.STAR) {
+            Tree n = N();
+            token = lex.nextToken();
+            if (lex.curToken() != Token.COMMA) {
+                throw new ParseException("`:,` expected at pos " + lex.curPos(), lex.curPos());
+            }
+            token = lex.nextToken();
+            Tree z = Z();
+            return new Tree("Z", n, new Tree("COMMA"), z);
+        }
+        throw new ParseException("Unexpected token at pos " + lex.curPos(), lex.curPos());
+    }
+
+    private Tree N() throws ParseException {
+        if (lex.curToken() == Token.STAR) {
+            token = lex.nextToken();
+            Tree n = N();
+            return new Tree("N", new Tree("STAR"), n);
+        }
+         else if (lex.curToken() == Token.NAME) {
+            String name = token;
+            token = lex.nextToken();
+            return new Tree("N", new Tree(name));
+        }
+         throw new ParseException("Unexpected token at pos " + lex.curPos(), lex.curPos());
+    }
+
+
+    public Tree parse(InputStream is) throws ParseException {
+        lex = new LexicalAnalyser(is);
+        token = lex.nextToken();
+        return S();
+    }
+}
+
   \end{verbatim}
-  
-  На следующей странице приведен пример дерева разбора для функции $$fun\ ex(a:Int, b:String, c:Char, d: Double):Object$$
-  
+
   \includepdf[page=1]{graph/DotGraph}
+  
+  
+  
   \section{5. Тестирование}
   
   \begin{center}
@@ -358,7 +330,7 @@
        & Пустой тест, вернет ошибку\\ \hline
     int a;   & Простой тест, проверяет $S \rightarrow \varepsilon$, $Z \rightarrow \varepsilon$ и $N \rightarrow v$\\ \hline
     int a, b; & Тест на правило $Z \rightarrow N,Z$\\ \hline
-    int_64 a1, b2с; & Тест на распознавание названий переменных и типов\\ \hline
+    int64_t a1, b2с; & Тест на распознавание названий переменных и типов\\ \hline
     int *a; & Тест на правило $N \rightarrow *N$\\ \hline
     int **a; & Тест на правило $T \rightarrow :n$\\ \hline
     int a; boolean b; & char Тест  на правило $S \rightarrow nZN;S$\\ \hline
