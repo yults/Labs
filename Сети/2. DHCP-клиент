@@ -1,0 +1,36 @@
+Настройка :
+sudo openvpn --config ./lab2conf.ovpn
+
+1) Запрашиваем DHCP-сервер и получаем ipv4 адрес и маску
+
+sudo dhclient 
+ip a -- 10.231.125.25/24
+
+2) Переходим в dhcp, где находятся конфигурационные файлы и находим
+соответсвующую заданию опцию
+
+сd /var/lib/dhcp
+cat dhclient.leases
+option domain-search
+"suspicious-goal.xn--p1ai."; -- ответ
+
+3) Получим адрес и соединим первую часть адреса(64 бита) и данный в условии хвостик
+
+ip a 
+fdca:8d41:e00f:f1c5:94ed:58ff:fe04:61c5/64 ::ea:1dff:feea:a290 
+ping6 fdca:8d41:e00f:f1c5:ea:1dff:feea:a290
+
+Вопрос: почему баллы за получение адресов от DHCP и DHCPv6 ставятся автоматически, а в задании на SLAAC нужно ещё что-то пинговать? Ответ на него укажите в отчёте.
+
+DHCP и DHCPv6 выдает централизовано IP-адреса, а SLAAC - нет, за него это делает маршрутизатор.
+
+4) Получим адрес по DHCPv6
+
+sudo dhclient -v -6 tap0
+
+5) Узнаем адрес сайта
+
+nslookup 42jnw8r07oi4k49bhzplrt6z.localnetwork
+fdca:8d41:e00f:f1c5:e1:c8ff:fecf:f6fc -- ответ
+
+6) Зашли на сайт http://42jnw8r07oi4k49bhzplrt6z.localnetwork:9229 и нажали на кнопку 
