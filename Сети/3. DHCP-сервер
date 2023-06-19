@@ -1,0 +1,44 @@
+Настройка :
+sudo openvpn --config ./lab3conf.ovpn
+
+1) Настроим DHCP-сервер
+
+sudo apt-get update
+sudo dpkg --configure -a
+sudo apt-get install isc-dhcp-server
+сd /etc/dhcp
+sudo nano dhcpd.conf
+subnet 10.5.155.0 netmask 255.255.255.0 {
+  range 10.5.155.10 10.5.155.100;
+  option routers 10.5.155.1;
+  option domain-name-servers 8.8.8.8, 8.8.4.4;
+}
+sudo ip addr add 10.5.155.1/24 dev tap0
+cd .. 
+cd default
+sudo nano isc-dhcp-server
+INTERFACESv4="tap0"
+sudo systemctl restart isc-dhcp-server
+sudo systemctl status isc-dhcp-server
+
+2) Настроим SLAAC
+
+sudo apt-get install radvd
+cd ..
+sudo nano radvd.conf
+interface tap0 {
+  AdvSendAdvert on;
+  AdvManagedFlag off;
+  AdvOtherConfigFlag on;
+  prefix fdb0:68cc:cf:1d80::/64 {
+    AdvOnLink on;
+    AdvAutonomous on;
+    AdvRouterAddr on;
+  };
+};
+sudo systemctl restart radvd
+
+3) MAC-адрес
+
+sudo journalctl -u isc-dhcp-server
+02:45:91:39:b8:ae -- ответ
