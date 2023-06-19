@@ -1,10 +1,16 @@
-1. dig nerc.itmo.ru --- 77.234.215.132
+1) IP-адрес
 
-2. dig nerc.itmo.ru @a.root-servers.net  +norecurse --- a.root-servers.net
+dig nerc.itmo.ru --- 77.234.215.132
+
+2) Список серверов
+
+dig nerc.itmo.ru @a.root-servers.net  +norecurse --- a.root-servers.net
 dig nerc.itmo.ru @194.85.252.62 +norecurse --- b.dns.ripn.net.(194.85.252.62)	
 dig nerc.itmo.ru @77.234.194.2 +norecurse --- ns.ITMO.RU.(77.234.194.2)
 
-3. sudo openvpn --config ./lab4.ovpn
+3) Рекурсивный сервер
+
+sudo openvpn --config ./lab4.ovpn
 sudo ip addr add 10.52.1.1/24 dev tap0
 sudo apt-get update
 sudo apt-get install bind9
@@ -16,7 +22,9 @@ sudo nano named.conf.options
 ```
 sudo systemctl restart bind9
 
-4. sudo nano named.conf.local
+4) Авторитетный сервер
+
+sudo nano named.conf.local
 ```
 	zone "e9mptnkhwd.localnetwork" {
 	type master;
@@ -39,13 +47,17 @@ sudo nano db.e9mptnkhwd.localnetwork
 ```
 sudo systemctl restart bind9
 
-5. sudo nano db.e9mptnkhwd.localnetwork
+5)  Почта
+
+sudo nano db.e9mptnkhwd.localnetwork
 ```
 	@ IN MX 10 mx.example.org.
 ```
 sudo systemctl restart bind9
 
-6. sudo nano db.e9mptnkhwd.localnetwork
+6) Поддомен
+
+sudo nano db.e9mptnkhwd.localnetwork
 ```                            
 	$TTL 604800
 	@ IN SOA ns.e9mptnkhwd.localnetwork. noreply.e9mptnkhwd.localnetwork. (
@@ -64,7 +76,8 @@ sudo systemctl restart bind9
 ```
 sudo systemctl restart bind9
 
-7.
+7) Трансфер
+
 sudo nano named.conf.local
 ```
 	allow-transfer {10.52.1.2;}
